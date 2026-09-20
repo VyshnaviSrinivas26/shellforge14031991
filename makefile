@@ -6,7 +6,9 @@ SRC = src/lexer.c \
       src/token.c \
       src/parser.c \
       src/expand.c \
+      src/builtin.c \
       src/main.c
+
 TARGET = shellforge
 
 all:

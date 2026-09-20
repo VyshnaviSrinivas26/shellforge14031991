@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -8,6 +9,7 @@
 #include "lexer.h"
 #include "parser.h"
 #include "expand.h"
+#include "builtin.h"
 
 int main(void)
 {
@@ -16,16 +18,15 @@ int main(void)
     printf("    A Unix Style Shell written in C\n");
     printf("=====================================\n");
 
-    printf("Welcome to Milestone2\n\n");
+    printf("Welcome to Milestone3\n\n");
 
     while (1)
     {
-        char *line =
-            readline("shellforge$ ");
+        char *line = readline("shellforge$ ");
 
         if (line == NULL)
         {
-            printf("\nGoodbye!\n");
+            printf("\n");
             break;
         }
 
@@ -53,19 +54,28 @@ int main(void)
 
                 pipeline_print(&pipeline);
 
-                pipeline_free(&pipeline);
+                /*
+                 * Execute built-in commands
+                 * directly inside the shell process.
+                 */
+                if (pipeline.command_count == 1 &&
+                    is_builtin(&pipeline.commands[0]))
+                {
+                    int should_exit =
+                        execute_builtin(&pipeline.commands[0]);
+
+                    pipeline_free(&pipeline);
+                    token_list_free(&list);
+                    free(line);
+
+                    if (should_exit)
+                        break;
+
+                    continue;
+                }
             }
-        }
 
-        if (strcmp(line, "exit") == 0)
-        {
-            token_list_free(&list);
-
-            free(line);
-
-            printf("Exiting...\n");
-
-            break;
+            pipeline_free(&pipeline);
         }
 
         token_list_free(&list);
