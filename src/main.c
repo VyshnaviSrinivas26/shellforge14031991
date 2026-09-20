@@ -10,6 +10,7 @@
 #include "parser.h"
 #include "expand.h"
 #include "builtin.h"
+#include "executor.h"
 
 int main(void)
 {
@@ -18,7 +19,7 @@ int main(void)
     printf("    A Unix Style Shell written in C\n");
     printf("=====================================\n");
 
-    printf("Welcome to Milestone3\n\n");
+    printf("Welcome to Milestone 3.2\n\n");
 
     while (1)
     {
@@ -55,8 +56,7 @@ int main(void)
                 pipeline_print(&pipeline);
 
                 /*
-                 * Execute built-in commands
-                 * directly inside the shell process.
+                 * Built-in command
                  */
                 if (pipeline.command_count == 1 &&
                     is_builtin(&pipeline.commands[0]))
@@ -72,6 +72,14 @@ int main(void)
                         break;
 
                     continue;
+                }
+
+                /*
+                 * External command
+                 */
+                if (pipeline.command_count == 1)
+                {
+                    execute_external(&pipeline.commands[0]);
                 }
             }
 

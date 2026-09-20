@@ -7,6 +7,7 @@ SRC = src/lexer.c \
       src/parser.c \
       src/expand.c \
       src/builtin.c \
+      src/executor.c \
       src/main.c
 
 TARGET = shellforge
