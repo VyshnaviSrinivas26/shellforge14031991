@@ -4,12 +4,13 @@
 #include "parser.h"
 
 /*
- * Execute an external command.
- *
- * Returns:
- * 0 - command executed successfully
- * 1 - error occurred
+ * Execute a single external command.
  */
 int execute_external(Command *cmd);
+
+/*
+ * Execute multiple commands connected by pipes.
+ */
+int execute_pipeline(Pipeline *pipeline);
 
 #endif

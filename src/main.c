@@ -40,7 +40,6 @@ int main(void)
         add_history(line);
 
         token_list_t list;
-
         token_list_init(&list);
 
         if (lexer(line, &list))
@@ -81,13 +80,19 @@ int main(void)
                 {
                     execute_external(&pipeline.commands[0]);
                 }
+                /*
+                 * Pipeline of external commands
+                 */
+                else if (pipeline.command_count > 1)
+                {
+                    execute_pipeline(&pipeline);
+                }
             }
 
             pipeline_free(&pipeline);
         }
 
         token_list_free(&list);
-
         free(line);
     }
 
