@@ -1,7 +1,25 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "token.h"
+
+static char *copy_string(const char *src)
+{
+    if (src == NULL)
+        return NULL;
+
+    size_t len = strlen(src);
+
+    char *dest = malloc(len + 1);
+
+    if (dest == NULL)
+        return NULL;
+
+    strcpy(dest, src);
+
+    return dest;
+}
 
 void token_list_init(token_list_t *list)
 {
@@ -12,46 +30,33 @@ void token_list_init(token_list_t *list)
 
     for (int i = 0; i < MAX_TOKENS; i++)
     {
-        list->tokens[i].type = TOKEN_UNKNOWN;
-        list->tokens[i].text[0] = '\0';
+        list->tokens[i].type = TOKEN_END;
+        list->tokens[i].value = NULL;
     }
 }
 
-void token_add(token_list_t *list, token_type_t type, const char *text)
+void token_add(token_list_t *list, TokenType type, const char *value)
 {
     if (list == NULL)
         return;
 
-    if (list->count >= MAX_TOKENS)
+    if (list->count >= MAX_TOKENS - 1)
         return;
 
     list->tokens[list->count].type = type;
 
-    if (text != NULL)
-    {
-        strncpy(list->tokens[list->count].text,
-                text,
-                MAX_TOKEN_LEN - 1);
-
-        list->tokens[list->count].text[MAX_TOKEN_LEN - 1] = '\0';
-    }
-    else
-    {
-        list->tokens[list->count].text[0] = '\0';
-    }
+    list->tokens[list->count].value =
+        copy_string(value);
 
     list->count++;
 }
 
-const char *token_name(token_type_t type)
+const char *token_type_name(TokenType type)
 {
     switch (type)
     {
         case TOKEN_WORD:
             return "WORD";
-
-        case TOKEN_PIPE:
-            return "PIPE";
 
         case TOKEN_INPUT:
             return "INPUT";
@@ -65,6 +70,9 @@ const char *token_name(token_type_t type)
         case TOKEN_BACKGROUND:
             return "BACKGROUND";
 
+        case TOKEN_PIPE:
+            return "PIPE";
+
         case TOKEN_END:
             return "END";
 
@@ -73,21 +81,45 @@ const char *token_name(token_type_t type)
     }
 }
 
-void token_print(const token_list_t *list)
+void token_print(Token *tokens)
+{
+    int i = 0;
+
+    printf("\n------------ TOKENS ------------\n");
+
+    while (tokens[i].type != TOKEN_END)
+    {
+        printf("%d : %-12s %s\n",
+               i,
+               token_type_name(tokens[i].type),
+               tokens[i].value ? tokens[i].value : "");
+
+        i++;
+    }
+
+    printf("%d : END          END\n", i);
+
+    printf("--------------------------------\n");
+}
+
+void token_list_print(token_list_t *list)
 {
     if (list == NULL)
         return;
 
-    printf("\n");
-    printf("------------ TOKENS ------------\n");
+    token_print(list->tokens);
+}
+
+void token_list_free(token_list_t *list)
+{
+    if (list == NULL)
+        return;
 
     for (int i = 0; i < list->count; i++)
     {
-        printf("%d : %-12s %s\n",
-               i,
-               token_name(list->tokens[i].type),
-               list->tokens[i].text);
+        free(list->tokens[i].value);
+        list->tokens[i].value = NULL;
     }
 
-    printf("--------------------------------\n");
+    list->count = 0;
 }

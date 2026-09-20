@@ -1,12 +1,19 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c11 -Iinclude
-LIBS = -lreadline
 
-SOURCES = src/expand.c src/lexer.c src/main.c src/parser.c src/token.c
+CFLAGS = -Wall -Wextra -std=c11 -Iinclude
+
+SRC = src/lexer.c \
+      src/token.c \
+      src/parser.c \
+      src/expand.c \
+      src/main.c
 TARGET = shellforge
 
 all:
-	$(CC) $(CFLAGS) $(SOURCES) $(LIBS) -o $(TARGET)
+	$(CC) $(CFLAGS) $(SRC) -lreadline -o $(TARGET)
 
 clean:
 	rm -f $(TARGET)
+
+run: all
+	./$(TARGET)

@@ -5,27 +5,23 @@
 #include <readline/history.h>
 
 #include "token.h"
+#include "lexer.h"
 #include "parser.h"
 #include "expand.h"
 
-int lexer(const char *line, token_list_t *list);
-
 int main(void)
 {
-    char *line;
+    printf("=====================================\n");
+    printf("             Shellforge\n");
+    printf("    A Unix Style Shell written in C\n");
+    printf("=====================================\n");
 
-    token_list_t tokens;
-    Pipeline pipeline;
-
-    printf("====================================\n");
-    printf("          ShellForge\n");
-    printf("   A Unix Style Shell written in C\n");
-    printf("====================================\n");
-    printf("Welcome to Milestone 2\n\n");
+    printf("Welcome to Milestone2\n\n");
 
     while (1)
     {
-        line = readline("shellforge$ ");
+        char *line =
+            readline("shellforge$ ");
 
         if (line == NULL)
         {
@@ -41,15 +37,20 @@ int main(void)
 
         add_history(line);
 
-        if (lexer(line, &tokens))
+        token_list_t list;
+
+        token_list_init(&list);
+
+        if (lexer(line, &list))
         {
-            token_print(&tokens);
+            token_list_print(&list);
 
-            pipeline_init(&pipeline);
+            Pipeline pipeline;
 
-            if (parse(&tokens, &pipeline))
+            if (parse(list.tokens, &pipeline))
             {
                 expand_variables(&pipeline);
+
                 pipeline_print(&pipeline);
 
                 pipeline_free(&pipeline);
@@ -58,10 +59,16 @@ int main(void)
 
         if (strcmp(line, "exit") == 0)
         {
+            token_list_free(&list);
+
             free(line);
+
             printf("Exiting...\n");
+
             break;
         }
+
+        token_list_free(&list);
 
         free(line);
     }
