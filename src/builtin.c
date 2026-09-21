@@ -70,17 +70,18 @@ static int builtin_pwd(Command *cmd)
 
     buffer = getcwd(NULL, 0);
 
-    if (buffer == NULL)
-    {
-        perror("pwd");
-        return 0;
-    }
-
-    printf("%s\n", buffer);
-
-    free(buffer);
-
+if (buffer == NULL)
+{
+    perror("pwd");
     return 0;
+}
+
+printf("2500032581\n");
+printf("%s\n", buffer);
+
+free(buffer);
+
+return 0;
 }
 
 static int builtin_echo(Command *cmd)
